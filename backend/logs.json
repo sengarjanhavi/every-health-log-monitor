@@ -1,0 +1,16 @@
+[
+  {
+    "timestamp": "2025-03-01T14:25:43Z",
+    "source": "medication-service",
+    "severity": "error",
+    "message": "User XYZ failed medication eligibility check",
+    "patient_id": "abc123"
+  },
+  {
+    "timestamp": "2025-03-01T15:00:00Z",
+    "source": "auth-service",
+    "severity": "info",
+    "message": "Login successful",
+    "patient_id": "def456"
+  }
+]
