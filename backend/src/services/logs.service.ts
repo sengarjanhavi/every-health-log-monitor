@@ -37,30 +37,16 @@ export async function getLogs(filters: FilterParams): Promise<LogDTO[]> {
   }
 
   if (validated.from || validated.to) {
-    where.timestamp = {};
+  where.timestamp = {};
 
-    if (validated.from) {
-      const fromDate = new Date(validated.from);
-
-      // Respect time if provided, otherwise use start of day
-      if (!validated.from.includes('T')) {
-        fromDate.setHours(0, 0, 0, 0);
-      }
-
-      where.timestamp.gte = fromDate;
-    }
-
-    if (validated.to) {
-      const toDate = new Date(validated.to);
-
-      // Respect time if provided, otherwise use end of day
-      if (!validated.to.includes('T')) {
-        toDate.setHours(23, 59, 59, 999);
-      }
-
-      where.timestamp.lte = toDate;
-    }
+  if (validated.from) {
+    where.timestamp.gte = new Date(validated.from);
   }
+
+  if (validated.to) {
+    where.timestamp.lte = new Date(validated.to);
+  }
+}
 
   const rows = await prisma.logEntry.findMany({
     where,

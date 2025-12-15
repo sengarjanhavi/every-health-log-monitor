@@ -7,23 +7,16 @@ import StatsSummary from '../components/StatsSummary';
 import Filters from '../components/Filters';
 import LogTable from '../components/LogTable';
 
+type ActiveFilters = {
+  severity?: string;
+  from?: string;
+  to?: string;
+};
+
 export default function LogsPage() {
   const [logs, setLogs] = useState<LogDTO[]>([]);
   const [stats, setStats] = useState<LogStats | null>(null);
-  const [filters, setFilters] = useState<{
-    severity?: string;
-    from?: string;
-    to?: string;
-  }>({});
-
-  async function refresh(updatedFilters = filters) {
-    const [logsData, statsData] = await Promise.all([
-      fetchLogs(updatedFilters),
-      fetchStats(),
-    ]);
-    setLogs(logsData);
-    setStats(statsData);
-  }
+  const [filters, setFilters] = useState<ActiveFilters>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -37,24 +30,28 @@ export default function LogsPage() {
         if (cancelled) return;
         setLogs(logsData);
         setStats(statsData);
-      } catch (e) {
-        console.error(e);
+      } catch (err) {
+        console.error('Failed to load logs', err);
       }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [filters]);
 
   return (
     <Stack spacing={3}>
-      <FileUpload onUploadSuccess={refresh} />
+      <FileUpload
+        onUploadSuccess={() => {
+          setFilters((prev) => ({ ...prev }));
+        }}
+      />
+
       <StatsSummary stats={stats} />
       <Filters
         onChange={(newFilters) => {
           setFilters(newFilters);
-          refresh(newFilters);
         }}
       />
       <LogTable logs={logs} />
